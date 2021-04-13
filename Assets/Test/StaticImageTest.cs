@@ -1,5 +1,4 @@
 using UnityEngine;
-using Unity.Barracuda;
 using UI = UnityEngine.UI;
 
 namespace MediaPipe {
@@ -9,24 +8,32 @@ public sealed class StaticImageTest : MonoBehaviour
     [SerializeField] Iris.ResourceSet _resources = null;
     [SerializeField] Texture2D _image = null;
     [SerializeField] UI.RawImage _previewUI = null;
-    [SerializeField] RectTransform _markerPrefab = null;
+    [SerializeField] Shader _shader = null;
+
+    Iris.IrisDetector _detector;
+    Material _material;
+    Bounds _bounds = new Bounds(Vector3.zero, Vector3.one);
 
     void Start()
     {
         _previewUI.texture = _image;
 
-        using var detector = new Iris.IrisDetector(_resources);
-        detector.ProcessImage(_image);
+        _detector = new Iris.IrisDetector(_resources);
+        _detector.ProcessImage(_image);
 
-        var size = ((RectTransform)_previewUI.transform).rect.size;
-
-        foreach (var v in detector.VertexArray)
-        {
-            var m = Instantiate(_markerPrefab, _previewUI.transform);
-            ((RectTransform)m.transform).anchoredPosition
-              = new Vector2(v.x, v.y) * size;
-        }
+        _material = new Material(_shader);
+        _material.SetBuffer("_Vertices", _detector.VertexBuffer);
     }
+
+    void OnDestroy()
+    {
+        _detector.Dispose();
+        Destroy(_material);
+    }
+
+    void Update()
+      => Graphics.DrawProcedural
+           (_material, _bounds, MeshTopology.Lines, 64, 1);
 }
 
 } // namespace MediaPipe
