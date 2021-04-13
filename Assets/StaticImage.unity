@@ -324,7 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3571a7d30dd86d0439b76ff9f9d165b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _model: {fileID: 5022602860645237092, guid: 6b86ae34743a5c7409a064af9795db71, type: 3}
+  _resources: {fileID: 11400000, guid: 7b060838327dd104592c2e9b214a255a, type: 2}
   _image: {fileID: 2800000, guid: f458912c613db6746bac8906224f6d3b, type: 3}
   _previewUI: {fileID: 601542143}
   _markerPrefab: {fileID: 6228989050720721863, guid: a593866e7e89b404991a1aab768ca437, type: 3}
