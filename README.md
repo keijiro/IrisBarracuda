@@ -30,5 +30,5 @@ This repository contains some stock photos from [Pexels]. [[1]][Test1],
 [[2]][Test2]
 
 [Pexels]: https://www.pexels.com/
-[Test1]: https://www.pexels.com/photo/man-in-white-button-shirt-smiling-3758112/
+[Test1]: https://www.pexels.com/photo/positive-black-woman-looking-at-camera-5325840/
 [Test2]: https://www.pexels.com/photo/scared-man-with-beard-against-black-background-6945091/
