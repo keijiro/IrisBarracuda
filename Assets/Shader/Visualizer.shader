@@ -4,7 +4,7 @@ Shader "Hidden/MediaPipe/Iris/Visualizer"
 
     #include "UnityCG.cginc"
 
-    Buffer<float4> _Vertices;
+    StructuredBuffer<float4> _Vertices;
 
     void Vertex(uint vid : SV_VertexID,
                 out float4 position : SV_Position,
