@@ -21,7 +21,7 @@ public sealed class Visualizer : MonoBehaviour
 
     #region Private members
 
-    IrisDetector _detector;
+    EyeLandmarkDetector _detector;
     Material _material;
     RectTransform[] _markers;
 
@@ -47,7 +47,7 @@ public sealed class Visualizer : MonoBehaviour
 
     void Start()
     {
-        _detector = new IrisDetector(_resources);
+        _detector = new EyeLandmarkDetector(_resources);
         _material = new Material(_shader);
         _markers = Enumerable.Range(0, 5)
           .Select(x => Instantiate(_markerPrefab, _previewUI.transform))

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace MediaPipe.Iris {
 
 //
-// Iris landmark detector class
+// Eye landmark detector class
 //
 // The vertex array returned from this class is slightly different from
 // MediaPipe's one. The vertices are concatenated into a single array.
@@ -13,13 +13,15 @@ namespace MediaPipe.Iris {
 // [0 - 4] : Iris vertices
 // [5 - 75] : Eyelid and eyebrow vertices
 //
-// You can use the extension methods defined in IrisDetectorExtensions.cs
-// to get specific keypoints.
+// You can use the extension methods defined in
+// EyeLandmarkDetectorExtensions.cs to get specific keypoints.
 //
-public sealed class IrisDetector : System.IDisposable
+public sealed class EyeLandmarkDetector : System.IDisposable
 {
     #region Public accessors
 
+    public const int IrisVertexCount = 5;
+    public const int ContourVertexCount = 71;
     public const int VertexCount = IrisVertexCount + ContourVertexCount;
 
     public ComputeBuffer VertexBuffer
@@ -32,7 +34,7 @@ public sealed class IrisDetector : System.IDisposable
 
     #region Public methods
 
-    public IrisDetector(ResourceSet resources)
+    public EyeLandmarkDetector(ResourceSet resources)
     {
         _resources = resources;
         AllocateObjects();
@@ -54,9 +56,6 @@ public sealed class IrisDetector : System.IDisposable
     // Output tensors
     const string IrisOutputName = "output_iris";
     const string ContourOutputName = "output_eyes_contours_and_brows";
-
-    const int IrisVertexCount = 5;
-    const int ContourVertexCount = 71;
 
     #endregion
 

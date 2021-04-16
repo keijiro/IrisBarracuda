@@ -3,7 +3,7 @@ IrisBarracuda
 
 ![gif](https://i.imgur.com/RHnfMxL.gif)
 
-**IrisBarracuda** is an iris landmark detector that runs the
+**IrisBarracuda** is an eye landmark detector that runs the
 [MediaPipe Iris] model on the [Unity Barracuda] neural network inference
 library.
 
