@@ -14,10 +14,16 @@ static class IWorkerExtensions
       CopyOutputToTempRT(this IWorker worker, string name, int w, int h)
     {
         var fmt = RenderTextureFormat.RFloat;
-        var shape = new TensorShape(1, h, w, 1);
         var rt = RenderTexture.GetTemporary(w, h, 0, fmt);
+#if BARRACUDA_4_0_0_OR_LATER
+        var shape = new TensorShape(1, 1, h, w);
+        using (var tensor = (TensorFloat)worker.PeekOutput(name).ShallowReshape(shape))
+            TensorToRenderTexture.ToRenderTexture(tensor, rt);
+#else
+        var shape = new TensorShape(1, h, w, 1);
         using (var tensor = worker.PeekOutput(name).Reshape(shape))
             tensor.ToRenderTexture(rt);
+#endif
         return rt;
     }
 }
