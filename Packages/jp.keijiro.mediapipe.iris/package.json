@@ -1,6 +1,6 @@
 {
   "author": "Keijiro Takahashi",
-  "dependencies": { "com.unity.barracuda": "1.3.3-preview" },
+  "dependencies": { "com.unity.barracuda": "3.0.0" },
   "description": "MediaPipe iris landmark detection neural network model for Unity Barracuda",
   "displayName": "MediaPipe Iris",
   "keywords": [ "unity" ],
