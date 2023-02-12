@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using System;
 
 namespace MediaPipe.Iris {
 
@@ -12,37 +11,37 @@ public static class EyeLandmarkDetectorExtensions
     #region Keypoint accessors
 
     public static Vector2 GetIrisCenter(this EyeLandmarkDetector detector)
-      => detector.VertexArray.ElementAt(0);
+      => detector.VertexArray[0];
 
     public static Vector2 GetEyelidLeft(this EyeLandmarkDetector detector)
-      => detector.VertexArray.ElementAt(5);
+      => detector.VertexArray[5];
 
     public static Vector2 GetEyelidRight(this EyeLandmarkDetector detector)
-      => detector.VertexArray.ElementAt(13);
+      => detector.VertexArray[13];
 
     public static Vector2 GetEyelidLower(this EyeLandmarkDetector detector)
-      => (detector.VertexArray.ElementAt(8) +
-          detector.VertexArray.ElementAt(9)) * 0.5f;
+      => (detector.VertexArray[8] +
+          detector.VertexArray[9]) * 0.5f;
 
     public static Vector2 GetEyelidUpper(this EyeLandmarkDetector detector)
-      => (detector.VertexArray.ElementAt(17) +
-          detector.VertexArray.ElementAt(18)) * 0.5f;
+      => (detector.VertexArray[17] +
+          detector.VertexArray[18]) * 0.5f;
 
     #endregion
 
     #region Partial vertex array accessors
 
-    public static IEnumerable<Vector4>
+    public static ReadOnlySpan<Vector4>
       IrisVertexArray(this EyeLandmarkDetector detector)
-      => detector.VertexArray.Take(5);
+      => detector.VertexArray.Slice(0, 5);
 
-    public static IEnumerable<Vector4>
+    public static ReadOnlySpan<Vector4>
       LowerEyelidVertexArray(this EyeLandmarkDetector detector)
-      => detector.VertexArray.Skip(5).Take(8);
+      => detector.VertexArray.Slice(5, 8);
 
-    public static IEnumerable<Vector4>
+    public static ReadOnlySpan<Vector4>
       UpperEyelidVertexArray(this EyeLandmarkDetector detector)
-      => detector.VertexArray.Skip(13).Take(7);
+      => detector.VertexArray.Slice(13, 7);
 
     #endregion
 }

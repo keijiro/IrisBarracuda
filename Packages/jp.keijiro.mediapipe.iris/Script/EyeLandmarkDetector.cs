@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Barracuda;
 using UnityEngine;
 
@@ -24,16 +23,6 @@ public sealed class EyeLandmarkDetector : System.IDisposable
     public const int ContourVertexCount = 71;
     public const int VertexCount = IrisVertexCount + ContourVertexCount;
 
-    public ComputeBuffer VertexBuffer
-      => _postBuffer;
-
-    public IEnumerable<Vector4> VertexArray
-      => _postRead ? _postReadCache : UpdatePostReadCache();
-
-    #endregion
-
-    #region Public methods
-
     public EyeLandmarkDetector(ResourceSet resources)
       => AllocateObjects(resources);
 
@@ -42,6 +31,12 @@ public sealed class EyeLandmarkDetector : System.IDisposable
 
     public void ProcessImage(Texture image)
       => RunModel(image);
+
+    public GraphicsBuffer VertexBuffer
+      => _output;
+
+    public System.ReadOnlySpan<Vector4> VertexArray
+      => _readCache.Cached;
 
     #endregion
 
@@ -61,7 +56,8 @@ public sealed class EyeLandmarkDetector : System.IDisposable
     ResourceSet _resources;
     IWorker _worker;
     (Tensor tensor, ComputeTensorData data) _preprocess;
-    ComputeBuffer _postBuffer;
+    GraphicsBuffer _output;
+    ReadCache _readCache;
 
     void AllocateObjects(ResourceSet resources)
     {
@@ -86,7 +82,10 @@ public sealed class EyeLandmarkDetector : System.IDisposable
 #endif
 
         // Output buffer
-        _postBuffer = new ComputeBuffer(VertexCount, sizeof(float) * 4);
+        _output = BufferUtil.NewStructured<Vector4>(VertexCount);
+
+        // Read cache
+        _readCache = new ReadCache(_output);
     }
 
     void DeallocateObjects()
@@ -97,8 +96,8 @@ public sealed class EyeLandmarkDetector : System.IDisposable
         _preprocess.tensor?.Dispose();
         _preprocess = (null, null);
 
-        _postBuffer?.Dispose();
-        _postBuffer = null;
+        _output?.Dispose();
+        _output = null;
     }
 
     #endregion
@@ -128,27 +127,13 @@ public sealed class EyeLandmarkDetector : System.IDisposable
         var contRT = _worker.CopyOutputToTempRT(ContourOutputName, 3, ContourVertexCount);
         post.SetTexture(0, "_IrisTensor", irisRT);
         post.SetTexture(0, "_ContourTensor", contRT);
-        post.SetBuffer(0, "_Vertices", _postBuffer);
+        post.SetBuffer(0, "_Vertices", _output);
         post.Dispatch(0, 1, 1, 1);
         RenderTexture.ReleaseTemporary(irisRT);
         RenderTexture.ReleaseTemporary(contRT);
 
-        // Read cache invalidation
-        _postRead = false;
-    }
-
-    #endregion
-
-    #region GPU to CPU readback
-
-    Vector4[] _postReadCache = new Vector4[VertexCount];
-    bool _postRead;
-
-    Vector4[] UpdatePostReadCache()
-    {
-        _postBuffer.GetData(_postReadCache, 0, 0, VertexCount);
-        _postRead = true;
-        return _postReadCache;
+        // Cache data invalidation
+        _readCache.Invalidate();
     }
 
     #endregion
