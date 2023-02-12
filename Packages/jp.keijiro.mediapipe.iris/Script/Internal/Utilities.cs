@@ -15,29 +15,25 @@ static class BufferUtil
 
 #region Extension methods
 
+static class ComputeShaderExtensions
+{
+    public static void DispatchThreads
+      (this ComputeShader compute, int kernel, int x, int y, int z)
+    {
+        uint xc, yc, zc;
+        compute.GetKernelThreadGroupSizes(kernel, out xc, out yc, out zc);
+        x = (x + (int)xc - 1) / (int)xc;
+        y = (y + (int)yc - 1) / (int)yc;
+        z = (z + (int)zc - 1) / (int)zc;
+        compute.Dispatch(kernel, x, y, z);
+    }
+}
+
 static class IWorkerExtensions
 {
-    //
-    // Retrieves an output tensor from a NN worker and returns it as a
-    // temporary render texture. The caller must release it using
-    // RenderTexture.ReleaseTemporary.
-    //
-    public static RenderTexture
-      CopyOutputToTempRT(this IWorker worker, string name, int w, int h)
-    {
-        var fmt = RenderTextureFormat.RFloat;
-        var rt = RenderTexture.GetTemporary(w, h, 0, fmt);
-#if BARRACUDA_4_0_0_OR_LATER
-        var shape = new TensorShape(1, 1, h, w);
-        using (var tensor = (TensorFloat)worker.PeekOutput(name).ShallowReshape(shape))
-            TensorToRenderTexture.ToRenderTexture(tensor, rt);
-#else
-        var shape = new TensorShape(1, h, w, 1);
-        using (var tensor = worker.PeekOutput(name).Reshape(shape))
-            tensor.ToRenderTexture(rt);
-#endif
-        return rt;
-    }
+    public static ComputeBuffer PeekOutputBuffer
+      (this IWorker worker, string tensorName)
+      => ((ComputeTensorData)worker.PeekOutput(tensorName).tensorOnDevice).buffer;
 }
 
 #endregion
